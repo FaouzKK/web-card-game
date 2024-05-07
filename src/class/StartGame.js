@@ -92,7 +92,11 @@
 
            CardIndex.forEach(i => {
 
-                gameInnerHTML += `<a href="#" id="card-${i}" class="card"><img src="/card/card-i.png" alt="" height="80px"></a>\n`
+                gameInnerHTML += `<a href="#" id="card-${i}" class="card">
+                  <img class="back" src="./card/card-i.png" alt="">
+                  <img class="face" src="./card/card-${i}.png" alt="">
+                </a>
+                `;
            }) ;
 
            gameInnerHTML += `</div>` ;
@@ -145,7 +149,7 @@
 
          StartGame.#openCard.push(card) ;
 
-       card.firstElementChild.setAttribute("src",`/card/${card.id}.png`) ;
+       card.classList.add('face_up') ;
         
        
         if(StartGame.#openCard.length < 2) return ;
@@ -186,7 +190,7 @@
                     StartGame.#openCard.forEach(card =>{
 
                     /**On referme les cartes ouverte */
-                    card.firstElementChild.setAttribute("src",`/card/card-i.png`) ; 
+                    card.classList.remove('face_up') ;
 
                     }) ;
                     let move = document.querySelector("#move") ;
