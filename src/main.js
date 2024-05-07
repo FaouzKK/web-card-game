@@ -1,6 +1,6 @@
-import './assets/main.css'
+import { StartGame } from "./class/StartGame.js"
 
-import { createApp } from 'vue'
-import App from './App.vue'
+addEventListener("DOMContentLoaded", e => {
 
-createApp(App).mount('#app')
+      new StartGame() ;
+})
