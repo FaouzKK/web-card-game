@@ -141,7 +141,7 @@
       // console.log(card) ;
       
 
-      if (StartGame.#openCard.length >= 2) return ; 
+      if (StartGame.#openCard.length >= 2 || StartGame.#openCard.includes(card)) return ; 
 
          StartGame.#openCard.push(card) ;
 
