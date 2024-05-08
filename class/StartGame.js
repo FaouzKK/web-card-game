@@ -1,14 +1,23 @@
  /**
   * Une class Pour gerer efficacement les actions du jeu
   */
- 
+ import { GameDifficulty } from "./GameDifficulty.js";
  export  class StartGame {
 
     /**
-     * Cette variable static va stocker les cartes ouvertes
+     * Stockage des cartes ouverte
      */
      static #openCard = [] ;
+
+     /**
+      * Contient les cartes resolu
+      */
      static #resolvedCard = [] ;
+
+     /**
+      * Definie le mode d'audition ;
+      */
+     static #audio = {music : false , sound : true} ;
  
         constructor() {
             
@@ -17,8 +26,30 @@
             const StartGamePanel = `<p class = "fw-bold">Highscore : <span class = "text-primary">${highscore}</span></p>
             <h3 class="text-warning fw-bold">Regles :</h3>
             <p>Le but du jeu est de trouver toutes les paires de cartes identiques dans une limite de mouvement</p>
+            <div class="d-flex align-items-center justify-content-between p-4 flex-lg-row  flex-sm-column flex-xs-column">
+                  <div>
+                        <label for="difficulty" class="form-label fw-bold text-danger">Choisir un mode de jeu</label>
+
+                        <div class="form-check">
+                            <input type="radio" name="difficulty" id="difficulty-easy" class = "form-check-input" value="easy" checked>
+                            <label for="difficulty-easy" class="form-check-label" >Facile</label>
+                      </div>
+                      <div class="form-check">
+                          <input type="radio" name="difficulty" id="difficulty-medium" class = "form-check-input" value="normal">
+                          <label for="difficulty-medium" class="form-check-label">Normal</label>
+                      </div>
+
+                      <div class="form-check">
+                        <input type="radio" name="difficulty" id="difficulty-hard" class = "form-check-input" value="hard">
+                        <label for="difficulty-hard" class="form-check-label">Difficile</label>
+                     </div>    
+                   </div>
+                   <div id="music-btn" class="d-flex justify-content-evenly align-items-center" style="gap : 50px">
+                            <a href="#"><i class="bi bi-volume-mute-fill h1" id = "muted"></i></a>
+                   </div>
+            </div>
             <div class="text-center pt-2">
-                <a href = "#" id = "btn-start-game"class="btn btn-success">Commencez le jeu</a>
+                <a href = "#" id = "btn-start-game" class="btn btn-success">Commencez le jeu</a>
             </div>`
 
           const gameContent = document.querySelector("#game-content") ;
@@ -31,15 +62,32 @@
 
                e.preventDefault() ;
 
-               this.#startGame() ;
+               const difficulty = document.querySelector('input[name="difficulty"]:checked').value ;
+
+               const gameDifficulty = new GameDifficulty(difficulty) ;
+
+               this.#startGame(gameDifficulty) ;
 
            }) ;
+
+           const musicBtn = document.querySelector("#music-btn > a") ;
+
+           const audio = new Audio("soundtrack/mainmusic.mp3") ;
+             
+             musicBtn.addEventListener("click" , e => {
+
+                  e.preventDefault() ;
+               
+                  this.#musicGestion(audio) ;
+             })
+            
         }   
 
         /**
          * Cette fonction  initialise le jeu
+         * @param {GameDifficulty} gameDifficulty 
          */
-     #startGame() {
+     #startGame(gameDifficulty) {
 
 
            const CardIndex = [] ;
@@ -72,7 +120,7 @@
 
             //Creer un tableau conteneant des id de 1 a 20 ;
 
-            for (let i = 1; i <= 10; i++) {
+            for (let i = 1; i <= gameDifficulty.carteLenght / 2 ; i++) {
                 CardIndex.push(i);
                 CardIndex.push(i);
             }
@@ -89,7 +137,7 @@
              * Creaction des <a> contenant les card de jeu avec identifiants aleatoire
              */
 
-           let gameInnerHTML = `<p class="h4 py-3">Movement : <span class = "text-danger" id = "move" >20</span></p>\n<p  class="h4 py-3">Score : <span id = "score" class = "text-primary">0</span></p>\n<div id="cards">`
+           let gameInnerHTML = `<p class="h4 py-3">Movement : <span class = "text-danger" id = "move" >${gameDifficulty.trylengh}</span></p>\n<p  class="h4 py-3">Score : <span id = "score" class = "text-primary">0</span></p>\n<div id="cards">`
 
            CardIndex.forEach(i => {
 
@@ -122,7 +170,7 @@
 
                   const target = e.currentTarget ;
 
-                   this.#checkCard(target) ;
+                   this.#checkCard(target,gameDifficulty) ;
 
 
               })
@@ -138,10 +186,11 @@
         /**
          * Cette fonction va verifier les cartes
          * @param {HTMLAnchorElement} card 
+         * @param {gameDifficulty} gameDifficulty 
          * @returns {void}
          */
      
-      #checkCard(card) {
+      #checkCard(card , gameDifficulty) {
 
       // console.log(card) ;
       
@@ -175,14 +224,14 @@
                  score.innerText = scoreInt ;
                              
 
-                   if (StartGame.#resolvedCard.length == 10) {
+                   if (StartGame.#resolvedCard.length == gameDifficulty.trylengh / 2) {
 
                         let move = document.querySelector("#move") ;
                         let moveInt = parseInt(move.innerText.trim()) ; 
                         
                         sessionStorage.setItem("score",scoreInt + moveInt*10) ;
 
-                        return this.#endGame(1) ;
+                        return this.#endGame(1,gameDifficulty) ;
                         
                    } ;
                    
@@ -201,7 +250,7 @@
 
                     let rest = moveInt - 1 ;
 
-                    if (rest == 0)  return this.#endGame(0) ;
+                    if (rest == 0)  return this.#endGame(0,gameDifficulty) ;
                    
                             move.innerText = rest ;
          
@@ -217,9 +266,10 @@
 
     /**
      * Declare la Fin de la partie
-     * @param {number} state 0 si c'est un gameOver et 1 si c'est un gameWin 
+     * @param {number} state 0 si c'est un gameOver et 1 si c'est un gameWin
+     * @param {gameDifficulty} difficulty  
      */
-      #endGame(state) {
+      #endGame(state,difficulty) {
 
             //console.log('Fin normal du jeu') ;
 
@@ -245,7 +295,7 @@
            restart.addEventListener("click", e => {
 
                 e.preventDefault() ;
-                this.#startGame() ;
+                this.#startGame(difficulty) ;
                  
            })
         
@@ -259,6 +309,39 @@
 
       }
 
+      /**
+       * Gestion de la musique
+       * @param {audio} audio 
+       * 
+       */
+      #musicGestion(audio) {
+
+          const id = document.querySelector("#music-btn > a > i") ;
+
+           switch(id.getAttribute("class")) {
+
+              case "bi bi-volume-mute-fill h1" :
+
+                  id.setAttribute("class","bi bi-volume-up-fill h1") ;
+                  
+                  audio.play() ;
+
+                  audio.addEventListener("ended", () => {
+                    
+                    audio.play() ;
+                  })
+                
+                  break ;
+              
+              case "bi bi-volume-up-fill h1" :
+
+                  id.setAttribute("class","bi bi-volume-mute-fill h1") ;
+
+                  audio.pause() ;
+                  break ;
+           }
+
+      }
         
 
  }
