@@ -159,7 +159,7 @@
         //On ajoute un evenement pour l'interaction avec les cartes ;
         //gameDifficulty.setCardLayoutByScreenSize() ;
         
-        const cards = document.querySelectorAll('#cards > a') ;
+        const cards = document.querySelectorAll(`#${gameDifficulty.setCardLayoutByScreenSize} > a`) ;
 
         //console.log(cards) ;
 
