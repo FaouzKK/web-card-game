@@ -137,7 +137,7 @@
              * Creaction des <a> contenant les card de jeu avec identifiants aleatoire
              */
 
-           let gameInnerHTML = `<p class="h4 py-3">Movement : <span class = "text-danger" id = "move" >${gameDifficulty.trylengh}</span></p>\n<p  class="h4 py-3">Score : <span id = "score" class = "text-primary">0</span></p>\n<div id="cards">`
+           let gameInnerHTML = `<p class="h4 py-3">Movement : <span class = "text-danger" id = "move" >${gameDifficulty.trylengh}</span></p>\n<p  class="h4 py-3">Score : <span id = "score" class = "text-primary">0</span></p>\n<div id="${gameDifficulty.setCardLayoutByScreenSize}">`
 
            CardIndex.forEach(i => {
 
@@ -157,7 +157,8 @@
         gameContent.innerHTML = gameInnerHTML ;
 
         //On ajoute un evenement pour l'interaction avec les cartes ;
-
+        //gameDifficulty.setCardLayoutByScreenSize() ;
+        
         const cards = document.querySelectorAll('#cards > a') ;
 
         //console.log(cards) ;

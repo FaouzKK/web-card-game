@@ -42,4 +42,27 @@ export class GameDifficulty {
             default:
           }
      }
+
+     /**
+      * Etablis la dispositions des cartes en fonction de la taille de l'ecran
+      * @returns {string}
+      */
+
+    get setCardLayoutByScreenSize() {
+
+        if (window.screen.width < 600) return 'cards' ;
+
+
+         if (this.#difficulty == 'normal' ) {
+
+                return 'cards-normal'  ;      
+
+         } else if (this.#difficulty == 'hard') {
+
+                return 'cards-hard'
+         } else {
+
+                return 'cards'
+         }
+     }
 }
